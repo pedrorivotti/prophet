@@ -122,17 +122,14 @@ with open('requirements.txt', 'r') as f:
 
 setup(
     name='prophet',
-    version='1.0.1+criteo3',
+    version='1.0.1+criteo4',
     description='Automatic Forecasting Procedure',
     url='https://facebook.github.io/prophet/',
     author='Sean J. Taylor <sjtz@pm.me>, Ben Letham <bletham@fb.com>',
     author_email='sjtz@pm.me',
     license='MIT',
     packages=find_packages(),
-    setup_requires=[
-        'pystan<=2.18',
-        'pandas>=1.0.4',
-    ],
+    setup_requires=install_requires,
     install_requires=install_requires,
     python_requires='>=3',
     zip_safe=False,
