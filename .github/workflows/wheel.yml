@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest"]
+        os: ["ubuntu-latest"]
         python-version: [3.9]
         architecture: ["x64"]
       fail-fast: false
