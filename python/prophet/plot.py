@@ -41,7 +41,7 @@ except ImportError:
 
 def plot(
     m, fcst, ax=None, uncertainty=True, plot_cap=True, xlabel='ds', ylabel='y',
-    figsize=(10, 6)
+    figsize=(10, 6), include_legend=False
 ):
     """Plot the Prophet forecast.
 
@@ -57,6 +57,7 @@ def plot(
     xlabel: Optional label name on X-axis
     ylabel: Optional label name on Y-axis
     figsize: Optional tuple width, height in inches.
+    include_legend: Optional boolean to add legend to the plot.
 
     Returns
     -------
@@ -68,15 +69,16 @@ def plot(
     else:
         fig = ax.get_figure()
     fcst_t = fcst['ds'].dt.to_pydatetime()
-    ax.plot(m.history['ds'].dt.to_pydatetime(), m.history['y'], 'k.')
-    ax.plot(fcst_t, fcst['yhat'], ls='-', c='#0072B2')
+    ax.plot(m.history['ds'].dt.to_pydatetime(), m.history['y'], 'k.',
+            label='Observed data points')
+    ax.plot(fcst_t, fcst['yhat'], ls='-', c='#0072B2', label='Forecast')
     if 'cap' in fcst and plot_cap:
-        ax.plot(fcst_t, fcst['cap'], ls='--', c='k')
+        ax.plot(fcst_t, fcst['cap'], ls='--', c='k', label='Maximum capacity')
     if m.logistic_floor and 'floor' in fcst and plot_cap:
-        ax.plot(fcst_t, fcst['floor'], ls='--', c='k')
+        ax.plot(fcst_t, fcst['floor'], ls='--', c='k', label='Minimum capacity')
     if uncertainty and m.uncertainty_samples:
         ax.fill_between(fcst_t, fcst['yhat_lower'], fcst['yhat_upper'],
-                        color='#0072B2', alpha=0.2)
+                        color='#0072B2', alpha=0.2, label='Uncertainty interval')
     # Specify formatting to workaround matplotlib issue #12925
     locator = AutoDateLocator(interval_multiples=False)
     formatter = AutoDateFormatter(locator)
@@ -85,6 +87,8 @@ def plot(
     ax.grid(True, which='major', c='gray', ls='-', lw=1, alpha=0.2)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
+    if include_legend:
+        ax.legend()
     fig.tight_layout()
     return fig
 
@@ -469,7 +473,8 @@ def add_changepoints_to_plot(
 
 
 def plot_cross_validation_metric(
-    df_cv, metric, rolling_window=0.1, ax=None, figsize=(10, 6), color='b'
+    df_cv, metric, rolling_window=0.1, ax=None, figsize=(10, 6), color='b',
+    point_color='gray'
 ):
     """Plot a performance metric vs. forecast horizon from cross validation.
 
@@ -539,7 +544,7 @@ def plot_cross_validation_metric(
     x_plt = df_none['horizon'].astype('timedelta64[ns]').astype(np.int64) / float(dt_conversions[i])
     x_plt_h = df_h['horizon'].astype('timedelta64[ns]').astype(np.int64) / float(dt_conversions[i])
 
-    ax.plot(x_plt, df_none[metric], '.', alpha=0.1, c=color)
+    ax.plot(x_plt, df_none[metric], '.', alpha=0.1, c=point_color)
     ax.plot(x_plt_h, df_h[metric], '-', c=color)
     ax.grid(True)
 
