@@ -4,7 +4,6 @@ on:
   push:
   workflow_dispatch: {}
 
-
 env:
   STAN_BACKEND: "CMDSTANPY"
 
@@ -15,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: ["windows-latest"]
-        python-version: [3.9]
+        python-version: [3.8]
         architecture: ["x64"]
       fail-fast: false
 
@@ -29,7 +28,6 @@ jobs:
           Echo "OS_VERSION=$os_version" >> $env:GITHUB_ENV
           Echo "PIP_DEFAULT_CACHE=$HOME/pip/cache" >> $env:GITHUB_ENV
           Echo "DEFAULT_HOME=$HOME" >> $env:GITHUB_ENV
-
       - name: "Checkout repo"
         uses: actions/checkout@v2
 
@@ -47,13 +45,11 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/python/requirements.txt') }}-v1
           restore-keys: |
             ${{ runner.os }}-pip-
-
       - name: "Install pip"
         shell: pwsh
         run: |
           python -m pip install --upgrade pip
           python -m pip install cibuildwheel build delvewheel
-
       - name: "Restore RTools40"
         id: cache-rtools
         uses: actions/cache@v2
@@ -68,7 +64,7 @@ jobs:
           CIBW_ENVIRONMENT: >
             STAN_BACKEND="${{ env.STAN_BACKEND }}"
             PIP_CACHE_DIR="${{ env.PIP_DEFAULT_CACHE }}"
-          CIBW_BUILD: cp36-* cp37-* cp38-* cp39-*
+          CIBW_BUILD: cp36-* cp37-* cp38-* cp39-* cp310-*
           CIBW_ARCHS: native
           CIBW_BUILD_FRONTEND: build
           # CIBW_REPAIR_WHEEL_COMMAND: delvewheel repair -w {dest_dir} {wheel}
@@ -87,7 +83,7 @@ jobs:
     strategy:
       matrix:
         os: ["macos-latest", "ubuntu-latest"]
-        python-version: [3.9]
+        python-version: [3.8]
         architecture: ["x64"]
       fail-fast: false
 
@@ -97,14 +93,11 @@ jobs:
         run: |
           echo "PIP_DEFAULT_CACHE=$HOME/.cache/pip" >> $GITHUB_ENV
           echo "DEFAULT_HOME=$HOME" >> $GITHUB_ENV
-
       - name: "Get OS version (macOS)"
         if: startsWith(runner.os, 'macOS')
         run: |
           echo "PIP_DEFAULT_CACHE=$HOME/Library/Caches/pip" >> $GITHUB_ENV
           echo "DEFAULT_HOME=$HOME" >> $GITHUB_ENV
-
-
       - name: "Checkout repo"
         uses: actions/checkout@v2
 
@@ -122,12 +115,10 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/python/requirements.txt') }}-v1
           restore-keys: |
             ${{ runner.os }}-pip-
-
       - name: "Install pip"
         run: |
           python -m pip install --upgrade pip
           python -m pip install cibuildwheel build
-
       - name: "Build wheel"
         run: |
           cd python && python -m cibuildwheel --output-dir wheelhouse
@@ -141,7 +132,7 @@ jobs:
             PIP_CACHE_DIR="/host/${{ env.PIP_DEFAULT_CACHE }}"
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_BEFORE_ALL_LINUX: chmod -R a+rwx /host/${{ env.PIP_DEFAULT_CACHE }}
-          CIBW_BUILD: cp36-* cp37-* cp38-* cp39-*
+          CIBW_BUILD: cp36-* cp37-* cp38-* cp39-* cp310-*
           CIBW_SKIP: "*musllinux*"
           CIBW_ARCHS: native
           CIBW_BUILD_FRONTEND: build
