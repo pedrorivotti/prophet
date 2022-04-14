@@ -242,7 +242,7 @@ with open("requirements.txt", "r") as f:
 
 setup(
     name="prophet",
-    version="1.1",
+    version="1.1+criteo1",
     description="Automatic Forecasting Procedure",
     url="https://facebook.github.io/prophet/",
     author="Sean J. Taylor <sjtz@pm.me>, Ben Letham <bletham@fb.com>",
@@ -266,6 +266,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     long_description=long_description,
     long_description_content_type="text/markdown",
